@@ -1,6 +1,6 @@
 # I.PY_Snake
 
-#Requirements:  
+# Requirements:  
 Se va crea o interfață grafică minimală ce va oferi utilizatorului posibilitatea de a juca
 Snake. Când script-ul se rulează, începe o sesiune de joc. O sesiune de joc va fi
 formată din mai multe partide de joc.
