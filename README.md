@@ -9,4 +9,9 @@ După fiecare partidă de joc, se va afișa scorul obținut, cu posibilitatea de
 De asemenea, se va reține și cel mai mare scor, ce se actualizează, după caz, pe
 parcursul sesiunii de joc. La încheierea sesiunii, recordul va fi afișat.
 Se vor seta atat dimensiunea tablei cat și eventuale obstacole care pot exista pe tabla
-(printr-un fișier JSON dat la intrare)
+(printr-un fișier JSON dat la intrare)  
+## INPUT:  
+snake.py <table.json>
+## OUTPUT:  
+Interfața grafică ce afișează cărțile de joc. După terminarea jocului, se va
+afișa un mesaj corespunzător.
