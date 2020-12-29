@@ -13,5 +13,5 @@ Se vor seta atat dimensiunea tablei cat și eventuale obstacole care pot exista 
 ## INPUT:  
 snake.py <table.json>
 ## OUTPUT:  
-Interfața grafică ce afișează cărțile de joc. După terminarea jocului, se va
-afișa un mesaj corespunzător.
+Interfața grafică cu fereastra unde se află șarpele. Dupa terminarea jocului,
+se va afișa scorul cel mai mare.
