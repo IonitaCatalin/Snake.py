@@ -1,30 +1,71 @@
-class Player:
-    segments = []
-    orientation = 0
-    updateCounter = 0
-    updateCounterMax = 2
+import pygame
 
-    def __init__(self, step):
+
+class Player:
+    orientation = 0
+    update_counter = 0
+    update_counter_pframe = 2
+
+    def __init__(self, step, spawn_x, spawn_y, width, height):
         self.step = step
-        self.segments.append([0, 0])
-        print(self.segments)
+        self.segments = list()
+        self.width = width
+        self.height = height
+        self.segments.append([spawn_x, spawn_y])
+        self.image_surface = pygame.Surface((self.width, self.height))
+        pygame.draw.rect(self.image_surface, (255, 255, 255), (0, 0, self.width, self.height))
 
     def update(self):
-        self.updateCounter = self.updateCounter + 1
-        if self.updateCounter > self.updateCounterMax:
-            if len(self.segments) > 0:
-                for i in range(len(self.segments) - 1, 0, -1):
-                    self.segments[i] = self.segments[i - 1]
-            if self.orientation == 0:
-                print(self.segments)
-                self.segments[0][0] = self.segments[0][0] + self.step
-            if self.orientation == 1:
-                self.segments[0][0] = self.segments[0][0] - self.step
-            if self.orientation == 2:
-                self.segments[0][1] = self.segments[0][1] - self.step
-            if self.orientation == 3:
-                self.segments[0][1] = self.segments[0][1] + self.step
-            self.updateCounter = 0
+        head = list()
+
+        if self.orientation == 0:
+            head.append(self.segments[0][0] + self.step)
+            head.append(self.segments[0][1])
+        if self.orientation == 1:
+            head.append(self.segments[0][0] - self.step)
+            head.append(self.segments[0][1])
+        if self.orientation == 2:
+            head.append(self.segments[0][0])
+            head.append(self.segments[0][1] - self.step)
+        if self.orientation == 3:
+            head.append(self.segments[0][0])
+            head.append(self.segments[0][1] + self.step)
+        self.segments.insert(0, head)
+        self.segments.pop()
+
+    def grow(self):
+        if self.orientation == 0:
+            self.segments.append([self.segments[-1][0] + self.step, self.segments[-1][1]])
+        if self.orientation == 1:
+            self.segments.append([self.segments[-1][0] - self.step, self.segments[-1][1]])
+        if self.orientation == 2:
+            self.segments.append([self.segments[-1][0], self.segments[-1][1] - self.step])
+        if self.orientation == 3:
+            self.segments.append([self.segments[-1][0], self.segments[-1][1] + self.step])
+
+    def draw(self, surface):
+        for i in range(0, len(self.segments)):
+            surface.blit(self.image_surface, (self.segments[i][0], self.segments[i][1]))
+
+    def collide_with_point(self, point_surface, point_coordinates):
+        player_rect = self.image_surface.get_rect(
+            topleft=(self.segments[0][0], self.segments[0][1]))
+        point_rect = point_surface.get_rect(
+            topleft=(point_coordinates[0], point_coordinates[1]))
+        return player_rect.colliderect(point_rect)
+
+    def collide_with_itself(self, ):
+        collision = False
+        head_rect = self.image_surface.get_rect(
+            topleft=(self.segments[0][0], self.segments[0][1]))
+
+        for i in range(1, len(self.segments)):
+            body_rect = self.image_surface.get_rect(
+                topleft=(self.segments[i][0], self.segments[i][1]))
+            if head_rect.colliderect(body_rect):
+                collision = True
+                break
+        return collision
 
     def move_right(self):
         self.orientation = 0

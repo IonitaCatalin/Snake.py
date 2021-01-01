@@ -1,6 +1,5 @@
 import pygame
-import time
-
+import random
 from core.player import Player
 
 
@@ -8,35 +7,44 @@ class App:
     def __init__(self, resolution_width, resolution_height, player_width, player_height):
         self.running = True
         self.display_surface = None
-        self.image_surface = None
-        self.player = Player(10)
+        self.point_surface = None
+        self.player = Player(player_width, resolution_width // 2, resolution_height // 2, player_width, player_height)
         self.resolution_height = resolution_height
         self.resolution_width = resolution_width
         self.player_width = player_width
         self.player_height = player_height
+        self.point_coordinates = tuple()
 
-    def prepare_startup(self):
+    def startup(self):
         pygame.init()
         pygame.display.set_caption('I.PY_Snake')
+        self.spawn_score_point()
         self.running = True
-        self.display_surface = pygame.display.set_mode((self.resolution_width, self.resolution_height), pygame.HWSURFACE)
-        self.image_surface = pygame.Surface((self.player_width, self.player_height))
-        pygame.draw.rect(self.image_surface, (255, 255, 255), (0, 0, self.player_width,self.player_height))
+        self.display_surface = pygame.display.set_mode((self.resolution_width, self.resolution_height),
+                                                       pygame.HWSURFACE)
+        self.point_surface = pygame.Surface((self.player_width / 2, self.player_height / 2))
+        pygame.draw.rect(self.point_surface, (255, 255, 255), (0, 0, self.player_width / 2, self.player_height / 2))
 
-    def render_assets(self):
+    def render(self):
         self.display_surface.fill((0, 0, 0))
-        player_segments = self.player.get_segments()
-        for i in range(0, len(player_segments)):
-            print(i)
-            self.display_surface.blit(self.image_surface, (player_segments[i][0], player_segments[i][1]))
+        self.player.draw(self.display_surface)
+        self.display_surface.blit(self.point_surface, (self.point_coordinates[0], self.point_coordinates[1]))
         pygame.display.flip()
 
-    def execute(self):
-        self.prepare_startup()
+    def spawn_score_point(self):
+        self.point_coordinates = (random.uniform(0, self.resolution_width), random.uniform(0, self.resolution_height))
 
+    def execute(self):
+        self.startup()
+        clock = pygame.time.Clock()
         while self.running:
             pygame.event.pump()
             keys = pygame.key.get_pressed()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+
             if keys[pygame.K_RIGHT]:
                 self.player.move_right()
             if keys[pygame.K_LEFT]:
@@ -47,10 +55,14 @@ class App:
                 self.player.move_down()
             if keys[pygame.K_ESCAPE]:
                 self.running = False
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
+            if self.player.collide_with_itself():
+                print('Pierdut')
+            if self.player.collide_with_point(self.point_surface, self.point_coordinates):
+                self.display_surface.fill((0, 0, 0))
+                self.spawn_score_point()
+                self.player.grow()
+
+            self.render()
             self.player.update()
-            self.render_assets()
-            time.sleep(50.0 / 1000.0)
+            clock.tick(10)
         pygame.quit()
