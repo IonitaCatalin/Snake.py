@@ -3,15 +3,17 @@ import pygame
 
 class Player:
     orientation = 0
-    update_counter = 0
-    update_counter_pframe = 2
 
-    def __init__(self, step, spawn_x, spawn_y, width, height):
+    def __init__(self, step, spawn_x, spawn_y, width, height, boundary_x, boundary_y):
         self.step = step
         self.segments = list()
         self.width = width
         self.height = height
+        self.spawn_x = spawn_x
+        self.spawn_y = spawn_y
         self.segments.append([spawn_x, spawn_y])
+        self.boundary_x = boundary_x
+        self.boundary_y = boundary_y
         self.image_surface = pygame.Surface((self.width, self.height))
         pygame.draw.rect(self.image_surface, (255, 255, 255), (0, 0, self.width, self.height))
 
@@ -66,6 +68,18 @@ class Player:
                 collision = True
                 break
         return collision
+
+    def collide_with_walls(self):
+        head_x = self.segments[0][0]
+        head_y = self.segments[0][1]
+        if head_x >= self.boundary_x or head_x <= 0 or head_y >= self.boundary_y or head_y < 0:
+            return True
+        return False
+
+    def reset(self):
+        self.orientation = 0
+        self.segments.clear()
+        self.segments.append([self.spawn_x, self.spawn_y])
 
     def move_right(self):
         self.orientation = 0
