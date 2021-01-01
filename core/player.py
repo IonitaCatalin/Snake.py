@@ -76,6 +76,9 @@ class Player:
             return True
         return False
 
+    def collide_with_obstacles(self):
+        pass
+
     def reset(self):
         self.orientation = 0
         self.segments.clear()
