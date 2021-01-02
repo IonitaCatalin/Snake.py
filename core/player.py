@@ -57,7 +57,6 @@ class Player:
         return player_rect.colliderect(point_rect)
 
     def collide_with_itself(self, ):
-        collision = False
         head_rect = self.image_surface.get_rect(
             topleft=(self.segments[0][0], self.segments[0][1]))
 
@@ -65,9 +64,8 @@ class Player:
             body_rect = self.image_surface.get_rect(
                 topleft=(self.segments[i][0], self.segments[i][1]))
             if head_rect.colliderect(body_rect):
-                collision = True
-                break
-        return collision
+                return True
+        return False
 
     def collide_with_walls(self):
         head_x = self.segments[0][0]
@@ -76,8 +74,15 @@ class Player:
             return True
         return False
 
-    def collide_with_obstacles(self):
-        pass
+    def collide_with_obstacles(self, obstacle_surface, obstacles_coordinates):
+        head_rect = self.image_surface.get_rect(
+            topleft=(self.segments[0][0], self.segments[0][1]))
+        for i in range(0, len(obstacles_coordinates)):
+            obstacle_rect = obstacle_surface.get_rect(
+                topleft=(obstacles_coordinates[i][0], obstacles_coordinates[i][1]))
+            if head_rect.colliderect(obstacle_rect):
+                return True
+        return False
 
     def reset(self):
         self.orientation = 0

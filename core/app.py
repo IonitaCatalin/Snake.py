@@ -11,6 +11,7 @@ class App:
         self.running = True
         self.display_surface = None
         self.point_surface = None
+        self.obstacle_surface = None
         self.obstacles = obstacles
         self.player = Player(player_width, window_width // 2, window_height // 2, player_width,
                              player_height, window_width, window_height)
@@ -26,15 +27,19 @@ class App:
         pygame.display.set_caption('I.PY_Snake')
         self.spawn_score_point()
         self.running = True
-        self.point_surface = pygame.Surface((self.player_width / 2, self.player_height / 2))
-        pygame.draw.rect(self.point_surface, (255, 0, 0), (0, 0, self.player_width / 3, self.player_height / 3))
         self.display_surface = pygame.display.set_mode((self.window_width, self.window_height),
                                                        pygame.HWSURFACE)
+        self.point_surface = pygame.Surface((self.player_width / 2, self.player_height / 2))
+        pygame.draw.rect(self.point_surface, (255, 0, 0), (0, 0, self.player_width / 3, self.player_height / 3))
+        self.obstacle_surface = pygame.Surface((self.player_width, self.player_height))
+        pygame.draw.rect(self.obstacle_surface, (255, 255, 255), (0, 0, self.player_width, self.player_height))
 
     def render(self):
         self.display_surface.fill((0, 0, 0))
         self.player.draw(self.display_surface)
         self.display_surface.blit(self.point_surface, (self.point_coordinates[0], self.point_coordinates[1]))
+        for index in range(0, len(self.obstacles)):
+            self.display_surface.blit(self.obstacle_surface, (self.obstacles[index][0], self.obstacles[index][1]))
         pygame.display.flip()
 
     def render_round_screen(self):
@@ -75,9 +80,6 @@ class App:
             pygame.event.pump()
             keys = pygame.key.get_pressed()
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
             if playing:
                 if keys[pygame.K_RIGHT]:
                     self.player.move_right()
@@ -89,10 +91,8 @@ class App:
                     self.player.move_down()
                 if keys[pygame.K_ESCAPE]:
                     self.running = False
-                if self.player.collide_with_itself():
-                    self.rounds = self.rounds - 1
-                    playing = False
-                if self.player.collide_with_walls():
+                if self.player.collide_with_itself() or self.player.collide_with_walls() \
+                        or self.player.collide_with_obstacles(self.obstacle_surface, self.obstacles):
                     self.rounds = self.rounds - 1
                     playing = False
                 if self.player.collide_with_point(self.point_surface, self.point_coordinates):
