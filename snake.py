@@ -1,4 +1,5 @@
 import json
+import sys
 
 from core.app import App
 
@@ -11,13 +12,12 @@ def import_configuration(filename):
             content += chunk
         return json.loads(content)
     except IOError as exception:
-        print(f'Missing initialization file {filename}', str(exception))
+        print(f'Missing initialization file {filename}')
         exit(1)
 
 
 if __name__ == '__main__':
-    configuration = import_configuration('init.json')
-    print(configuration)
+    configuration = import_configuration(sys.argv[1])
     rounds = None
     map_width = None
     map_height = None
